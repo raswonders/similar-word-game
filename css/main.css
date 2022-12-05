@@ -27,9 +27,14 @@ html {
 
 body {
   height: 100vh;
+}
+
+.page-container {
+  margin-inline: 24px;
+  height: 100%;
   display: flex;
-  justify-content: space-between;
   flex-flow: column;
+  justify-content: space-between;
 }
 
 .word-section {
