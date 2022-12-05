@@ -12,6 +12,7 @@ html {
 
 body {
   font-size: 1.6rem;
+  font-family: 'Inter', sans-serif;
 }
 
 /* default box-sizing is border-box */
@@ -51,4 +52,8 @@ body {
 
 .health-bar-item {
   margin-inline-end: 5px;
+}
+
+.score-heading {
+  margin: 0;
 }
