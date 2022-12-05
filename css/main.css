@@ -80,3 +80,10 @@ body {
   font-size: 4rem;
   font-weight: bold;
 }
+
+.game-hint {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 300;
+  margin-inline-start: 4ch;
+}
