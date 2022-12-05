@@ -58,7 +58,12 @@ body {
 .score {
   text-align: end;
 }
+
 .score-heading {
   margin: 0;
   font-size: 1.4rem;
+}
+
+.score-number {
+  font-size: 2.4rem;
 }
