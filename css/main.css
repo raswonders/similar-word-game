@@ -41,6 +41,8 @@ body {
   height: 50vh;
   display: flex;
   flex-flow: column;
+  text-align: center;
+  transform: translateY(-4rem);
 }
 
 .top-bar {
@@ -82,7 +84,7 @@ body {
 }
 
 .game-hint {
-  margin: 0;
+  margin-block: 0 40px;
   font-size: 1.6rem;
   font-weight: 300;
   margin-inline-start: 4ch;
