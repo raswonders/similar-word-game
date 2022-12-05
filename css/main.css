@@ -51,9 +51,14 @@ body {
 }
 
 .health-bar-item {
-  margin-inline-end: 5px;
+  font-size: 2.1rem;
+  margin-inline-end: 0.05rem;
 }
 
+.score {
+  text-align: end;
+}
 .score-heading {
   margin: 0;
+  font-size: 1.4rem;
 }
