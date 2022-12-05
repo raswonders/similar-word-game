@@ -44,6 +44,7 @@ body {
 }
 
 .top-bar {
+  margin-block-start: 18px;
   display: flex;
   justify-content: space-between;
 }
