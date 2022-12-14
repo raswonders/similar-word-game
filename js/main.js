@@ -4,7 +4,40 @@ let retries = 5;
 const guessWordElem = document.querySelector(".guess-word");
 const answersElem = document.querySelector(".answers");
 
+answersElem.addEventListener('click', function(e) {
+  let answer = e.target.textContent;
+  if (isCorrect(answer)) {
+    celebrate(answer);
+    improveScore();
+  } else {
+    pointOutAnswer();
+    removeHealth();
+  }
+});
+
 main();
+
+function isCorrect(ans) {
+  return true;
+}
+
+function celebrate(choice) {
+  console.log(`${choice} is correct!`);
+}
+
+function improveScore() {
+  const scoreElem = document.querySelector(".score-number");
+  let newScore = Number(scoreElem.textContent) + 10;
+  scoreElem.textContent = newScore;
+}
+
+function pointOutAnswer() {
+  console.log("TODO pointOutAnswer");
+}
+
+function removeHealth() {
+  console.log("TODO removeHealth")
+}
 
 function main() {
   getGuessWord()
