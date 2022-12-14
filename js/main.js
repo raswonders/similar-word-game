@@ -32,7 +32,7 @@ function getAnswersHTML(guessWord) {
   let resultHTML = "";
   while (options.length) {
     let word = options.pop();
-    resultHTML += `<li class="synonym-item"><a class="synonym-link" href="#">${word}</a></li>\n`;
+    resultHTML += `<li class="answer-item"><a class="answer-link" href="#">${word}</a></li>\n`;
   }
 
   return resultHTML;

@@ -99,11 +99,11 @@ body {
   letter-spacing: 0.02ch;
 }
 
-.synonym-item {
+.answer-item {
   margin-block-end: 2rem;
 }
 
-.synonym-link {
+.answer-link {
   text-decoration: none;
   color: inherit;
 }
