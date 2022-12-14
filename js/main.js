@@ -2,7 +2,7 @@
 
 let retries = 5;
 const guessWordElem = document.querySelector(".guess-word");
-const synonymsElem = document.querySelector(".synonyms");
+const answersElem = document.querySelector(".answers");
 
 main();
 
@@ -11,9 +11,9 @@ function main() {
     .then(guessWord => {
       retries = 5;
 
-      let synonymsHTML = getSynonymsHTML(guessWord);
+      let answersHTML = getAnswersHTML(guessWord);
       guessWordElem.textContent = guessWord.word;
-      synonymsElem.innerHTML = synonymsHTML;
+      answersElem.innerHTML = answersHTML;
     })
     .catch(err => {
       console.error(`error ${err}`);
@@ -21,7 +21,7 @@ function main() {
     });
 }
 
-function getSynonymsHTML(guessWord) {
+function getAnswersHTML(guessWord) {
   let options = [guessWord.synonymsPrimary[0]];
   while (options.length < 4) {
     let word = wordlist.get();
