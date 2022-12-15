@@ -60,7 +60,7 @@ function nextQuestion() {
     })
     .catch(err => {
       console.error(`error ${err}`);
-      if (retries-- > 0) main();
+      if (retries-- > 0) nextQuestion();
     });
 }
 
