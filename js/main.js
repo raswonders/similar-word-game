@@ -1,24 +1,33 @@
 "use strict";
 
 let retries = 5;
+
+let answer = {
+  value: "",
+  isCorrect(ans) {
+    return this.value === ans; 
+  },
+}
+
 const guessWordElem = document.querySelector(".guess-word");
 const answersElem = document.querySelector(".answers");
 
 answersElem.addEventListener('click', function(e) {
-  let answer = e.target.textContent;
-  if (isCorrect(answer)) {
-    celebrate(answer);
+  let answerVal = e.target.textContent;
+  if (answer.isCorrect(answerVal)) {
+    celebrate(answerVal);
     improveScore();
+    nextQuestion();
   } else {
     pointOutAnswer();
     removeHealth();
   }
 });
 
-main();
+nextQuestion();
 
 function isCorrect(ans) {
-  return true;
+  return true
 }
 
 function celebrate(choice) {
@@ -39,10 +48,11 @@ function removeHealth() {
   console.log("TODO removeHealth")
 }
 
-function main() {
+function nextQuestion() {
   getGuessWord()
     .then(guessWord => {
       retries = 5;
+      answer.value = guessWord.synonymsPrimary[0];
 
       let answersHTML = getAnswersHTML(guessWord);
       guessWordElem.textContent = guessWord.word;
