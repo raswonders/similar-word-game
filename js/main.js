@@ -5,14 +5,39 @@ let retries = 5;
 let answer = {
   value: "",
   isCorrect(ans) {
-    return this.value === ans; 
+    return this.value === ans;
+  }
+};
+
+let healthBar = {
+  elem: document.querySelector(".health-bar"),
+  lives: 3,
+
+  decrease() {
+    if (this.lives === 0) {
+      console.log("TODO game ends");
+      return
+    }
+    this.lives--;
+    this.display();
   },
-}
+
+  display() {
+    let livesHTML = "";
+    for (let i = 0; i < this.lives; i++) {
+      livesHTML += `<li><i class="health-bar-item fa-solid fa-heart"></i></li>\n`;
+    }
+    for (let i = 0; i < 3 - this.lives; i++) {
+      livesHTML += `<li><i class="health-bar-item fa-solid fa-heart-crack"></i></li>\n`;
+    }
+    this.elem.innerHTML = livesHTML;
+  },
+};
 
 const guessWordElem = document.querySelector(".guess-word");
 const answersElem = document.querySelector(".answers");
 
-answersElem.addEventListener('click', function(e) {
+answersElem.addEventListener("click", function(e) {
   let answerVal = e.target.textContent;
   if (answer.isCorrect(answerVal)) {
     celebrate(answerVal);
@@ -27,7 +52,7 @@ answersElem.addEventListener('click', function(e) {
 nextQuestion();
 
 function isCorrect(ans) {
-  return true
+  return true;
 }
 
 function celebrate(choice) {
@@ -45,7 +70,8 @@ function pointOutAnswer() {
 }
 
 function removeHealth() {
-  console.log("TODO removeHealth")
+  console.log("removing health");
+  healthBar.decrease();
 }
 
 function nextQuestion() {
