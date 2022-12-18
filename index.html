@@ -16,7 +16,24 @@
 </head>
 
 <body>
-  <div class="page-container">
+  <div class="page-content pre-game hidden">
+    <div class="intro-text">
+      <div>Improve</div>
+      <div>your</div>
+      <div>Vocabulary</div>
+      <div>through</div>
+      <div><span>a</span>Game</div>
+    </div>
+
+    <a href="#" class="btn">
+      <div class="btn-body">
+        <div class="btn-btn-left">play</div>
+        <div class="now-div">now</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="page-content in-game hidden">
     <header class="top-bar">
       <ul class="health-bar">
         <li><i class="health-bar-item fa-solid fa-heart"></i></li>
@@ -30,13 +47,14 @@
     </header>
     <section class="word-section">
       <h1 class="guess-word"></h1>
-
       <h3 class="game-hint">is a synonym for</h3>
-
-      <ul class="answers">
-      </ul>
+      <ul class="answers"></ul>
     </section>
   </div>
+
+  <div class="page-content post-game hidden">
+  </div>
+
   <script src="js/wordlist.js"></script>
   <script src="js/main.js"></script>
 </body>

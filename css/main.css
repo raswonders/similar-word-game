@@ -4,6 +4,10 @@
   display: none !important;
 }
 
+.hidden {
+  display: none !important;
+}
+
 /* default font-size is 1.6rem */
 
 html {
@@ -29,12 +33,11 @@ body {
   height: 100vh;
 }
 
-.page-container {
+.page-content {
   margin-inline: 24px;
   height: 100%;
   display: flex;
   flex-flow: column;
-  justify-content: space-between;
 }
 
 .word-section {
@@ -106,4 +109,67 @@ body {
 .answer-link {
   text-decoration: none;
   color: inherit;
+}
+
+
+.intro-text {
+  width: 300px;
+  height: 50%;
+  padding-block-start: 63px;
+  display: flex;
+  margin: 0 auto;
+  flex-flow: column;
+  font-family: 'PT Serif', serif;
+}
+
+.intro-text *:nth-child(1) {
+  font-size: 52px;
+}
+
+.intro-text *:nth-child(2) {
+  font-size: 24px;
+  font-family: Inter, sans-serif;
+}
+
+.intro-text *:nth-child(3) {
+  font-size: 40px;
+  align-self: flex-end;
+}
+
+.intro-text *:nth-child(4) {
+  font-size: 24px;
+  font-family: Inter, sans-serif;
+  align-self: flex-end;
+}
+
+.intro-text *:nth-child(5) {
+  text-transform: uppercase;
+  font-size: 36px;
+}
+
+.intro-text *:nth-child(5) span {
+  font-size: 24px; 
+  text-transform: none;
+  font-family: Inter, sans-serif;
+}
+
+.btn {
+  font-family: 'PT Serif', serif;
+  font-size: 48px;
+  font-weight: bold;
+  text-decoration: none;
+  color: black;
+}
+
+.btn-body {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.btn-btn-left {
+  background: black;
+  color: white;
+  padding-inline: 0.1em;
+  padding-block-end: 40px;
 }
