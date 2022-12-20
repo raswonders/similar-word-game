@@ -22,6 +22,7 @@ class Health {
   constructor() {
     this.elem = document.querySelector(".health-bar");
     this.lives = 3;
+    this.display();
   }
 
   decrease() {
@@ -78,6 +79,13 @@ document.querySelector('.play-now').addEventListener('click', function(e) {
   e.preventDefault();
   game.play()
 })
+
+document.querySelector('.play-again').addEventListener('click', function(e) {
+  e.preventDefault();
+  game = new Game();
+  game.play()
+})
+
 
 answersElem.addEventListener("click", function(e) {
   let answerVal = e.target.textContent;
