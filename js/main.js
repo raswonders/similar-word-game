@@ -1,26 +1,37 @@
 "use strict";
 
 let retries = 5;
+let state = localStorage.getItem('state') || 'pre-game';
 
-let answer = {
-  value: "",
-  isCorrect(ans) {
-    return this.value === ans;
+let pageContentElemList = document.querySelectorAll('div.page-content')
+
+refreshUI(state)
+function refreshUI(state) {
+  for (let page of pageContentElemList) {
+    if (page.classList.contains(state)) {
+      page.classList.remove('hidden');
+    } else {
+      page.classList.add('hidden');
+    }
+
   }
-};
+}
 
-let healthBar = {
-  elem: document.querySelector(".health-bar"),
-  lives: 3,
+
+class Health {
+  constructor() {
+    this.elem = document.querySelector(".health-bar");
+    this.lives = 3;
+  }
 
   decrease() {
-    if (this.lives === 0) {
-      console.log("TODO game ends");
-      return
+    if (this.lives >= 1) {
+      this.lives--;
+      this.display();
     }
-    this.lives--;
-    this.display();
-  },
+
+    if (this.lives === 0) game.stop(); 
+  }
 
   display() {
     let livesHTML = "";
@@ -31,11 +42,41 @@ let healthBar = {
       livesHTML += `<li><i class="health-bar-item fa-solid fa-heart-crack"></i></li>\n`;
     }
     this.elem.innerHTML = livesHTML;
-  },
+  }
+}
+
+class Game {
+  constructor() {
+    this.state = 'pre-game'
+    this.score = 0;
+    this.health = new Health();
+  }
+
+  play() {
+    this.state = 'in-game';
+    refreshUI(this.state);
+  }
+
+  stop() {
+    this.state = 'post-game';
+    refreshUI(this.state);
+  }
+}
+
+let answer = {
+  value: "",
+  isCorrect(ans) {
+    return this.value === ans;
+  }
 };
 
 const guessWordElem = document.querySelector(".guess-word");
 const answersElem = document.querySelector(".answers");
+let game = new Game();
+document.querySelector('.play-now').addEventListener('click', function(e) {
+  e.preventDefault();
+  game.play()
+})
 
 answersElem.addEventListener("click", function(e) {
   let answerVal = e.target.textContent;
@@ -71,7 +112,7 @@ function pointOutAnswer() {
 
 function removeHealth() {
   console.log("removing health");
-  healthBar.decrease();
+  game.health.decrease();
 }
 
 function nextQuestion() {
