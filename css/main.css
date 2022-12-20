@@ -173,3 +173,35 @@ body {
   padding-inline: 0.1em;
   padding-block-end: 40px;
 }
+
+.upper-half {
+  height: 50%;
+}
+
+.game-over-heading {
+  margin: 0;
+  margin-block-start: 60px;
+  text-align: center;
+  font-family: 'PT Serif', serif;
+  font-size: 40px;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+}
+
+.score-summary {
+  margin-block-start: 60px;
+  text-align: center;
+  font-family: 'PT Serif', serif;
+}
+
+.score-heading {
+  font-size: 36px;
+  font-weight: normal;
+  letter-spacing: 0.02em;
+}
+
+.score-total {
+  font-size: 48px;
+  font-weight: 700;
+}

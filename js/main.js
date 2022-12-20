@@ -58,6 +58,7 @@ class Game {
   }
 
   stop() {
+    document.querySelector('.score-total').textContent = game.score;
     this.state = 'post-game';
     refreshUI(this.state);
   }
