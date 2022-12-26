@@ -1,5 +1,7 @@
 "use strict";
 
+import {getRandomWord} from "./wordlist"
+
 let retries = 5;
 let state = localStorage.getItem('state') || 'pre-game';
 
@@ -143,7 +145,7 @@ function nextQuestion() {
 function getAnswersHTML(guessWord) {
   let options = [guessWord.synonymsPrimary[0]];
   while (options.length < 4) {
-    let word = wordlist.get();
+    let word = getRandomWord();
     if (!guessWord.synonymsAll.includes(word)) options.push(word);
   }
   options.sort(() => 0.5 - Math.random);
@@ -158,7 +160,7 @@ function getAnswersHTML(guessWord) {
 }
 
 function getGuessWord() {
-  const randomWord = wordlist.get();
+  const randomWord = getRandomWord();
   return getSynonyms(randomWord);
 }
 
