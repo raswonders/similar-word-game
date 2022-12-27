@@ -1,6 +1,7 @@
 "use strict";
 
-import {getRandomWord} from "./wordlist"
+import { getRandomWord } from "./wordlist";
+import { getSynonyms } from "./thesaurus";
 
 let retries = 5;
 let state = localStorage.getItem('state') || 'pre-game';
@@ -162,58 +163,4 @@ function getAnswersHTML(guessWord) {
 function getGuessWord() {
   const randomWord = getRandomWord();
   return getSynonyms(randomWord);
-}
-
-function getSynonyms(word) {
-  const url = "https://www.wordreference.com/synonyms/" + word;
-
-  return new Promise((resolve, reject) => {
-    fetch(url)
-      .then(res => res.text())
-      .then(function(res) {
-        let wordObj = parsePage(res);
-        if (wordObj) resolve(wordObj);
-        else reject("word has no synonyms");
-      })
-      .catch(err => {
-        console.log(`error ${err}`);
-      });
-  });
-}
-
-function parsePage(page) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(page, "text/html");
-
-  if (hasNoEntry(doc)) return null;
-
-  let word = doc.querySelector(".headerWord").textContent;
-  let synonymsAll = [];
-  let synonymsPrimary = [];
-  let isPrimary = true;
-
-  let divs = doc.querySelectorAll("div");
-  for (let div of divs) {
-    if (div.textContent === "Synonyms:") {
-      let sibling = div.nextElementSibling;
-      let synonyms = Array.from(sibling.querySelectorAll("span")).map(
-        item => item.textContent
-      );
-
-      if (isPrimary) {
-        synonymsPrimary = synonyms;
-        isPrimary = false;
-      }
-
-      synonymsAll = synonymsAll.concat(synonyms);
-    }
-  }
-
-  if (synonymsAll.length === 0) return null;
-
-  return { word, synonymsPrimary, synonymsAll };
-}
-
-function hasNoEntry(document) {
-  return Boolean(document.querySelector("#noEntryFound"));
 }
