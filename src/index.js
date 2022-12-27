@@ -57,13 +57,16 @@ class Game {
   }
 
   play() {
-    this.state = 'in-game';
-    refreshUI(this.state);
+    this.changeState('in-game')
   }
 
   stop() {
     document.querySelector('.score-total').textContent = game.score;
-    this.state = 'post-game';
+    this.changeState('post-game');
+  }
+
+  changeState(state) {
+    this.state = state;
     refreshUI(this.state);
   }
 }
