@@ -128,7 +128,7 @@ function removeHealth() {
 }
 
 function nextQuestion() {
-  getGuessWord()
+  getSynonyms(getRandomWord())
     .then(guessWord => {
       retries = 5;
       answer.value = guessWord.synonymsPrimary[0];
@@ -158,9 +158,4 @@ function getAnswersHTML(guessWord) {
   }
 
   return resultHTML;
-}
-
-function getGuessWord() {
-  const randomWord = getRandomWord();
-  return getSynonyms(randomWord);
 }
