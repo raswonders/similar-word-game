@@ -8,39 +8,11 @@ let state = localStorage.getItem('state') || 'pre-game';
 
 let pageContentElemList = document.querySelectorAll('div.page-content')
 
-class Health {
-  constructor() {
-    this.elem = document.querySelector(".health-bar");
-    this.lives = 3;
-    this.display();
-  }
-
-  decrease() {
-    if (this.lives >= 1) {
-      this.lives--;
-      this.display();
-    }
-
-    if (this.lives === 0) game.stop();
-  }
-
-  display() {
-    let livesHTML = "";
-    for (let i = 0; i < this.lives; i++) {
-      livesHTML += `<li><i class="health-bar-item fa-solid fa-heart"></i></li>\n`;
-    }
-    for (let i = 0; i < 3 - this.lives; i++) {
-      livesHTML += `<li><i class="health-bar-item fa-solid fa-heart-crack"></i></li>\n`;
-    }
-    this.elem.innerHTML = livesHTML;
-  }
-}
-
 class Game {
   constructor() {
     this.state = 'pre-game'
     this.score = 0;
-    this.health = new Health();
+    this.lives = 3;
     this.refreshUI();
   }
 
@@ -58,6 +30,15 @@ class Game {
     this.refreshUI();
   }
 
+  removeLife() {
+    if (this.lives >= 1) {
+      this.lives--;
+      this.updateLivesUI();
+    }
+
+    if (this.lives === 0) this.stop();
+  }
+
   refreshUI() {
     for (let page of pageContentElemList) {
       if (page.classList.contains(this.state)) {
@@ -66,6 +47,19 @@ class Game {
         page.classList.add('hidden');
       }
     }
+    this.updateLivesUI();
+  }
+
+  updateLivesUI() {
+    let elem = document.querySelector(".health-bar");
+    let livesHTML = "";
+    for (let i = 0; i < this.lives; i++) {
+      livesHTML += `<li><i class="health-bar-item fa-solid fa-heart"></i></li>\n`;
+    }
+    for (let i = 0; i < 3 - this.lives; i++) {
+      livesHTML += `<li><i class="health-bar-item fa-solid fa-heart-crack"></i></li>\n`;
+    }
+    elem.innerHTML = livesHTML;
   }
 }
 
@@ -100,7 +94,7 @@ answersElem.addEventListener("click", function (e) {
     nextQuestion();
   } else {
     pointOutAnswer();
-    removeHealth();
+    removeLife();
   }
 });
 
@@ -120,9 +114,9 @@ function pointOutAnswer() {
   console.log("TODO pointOutAnswer");
 }
 
-function removeHealth() {
+function removeLife() {
   console.log("removing health");
-  game.health.decrease();
+  game.removeLife();
 }
 
 function nextQuestion() {
