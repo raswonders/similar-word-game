@@ -106,10 +106,6 @@ answersElem.addEventListener("click", function (e) {
 
 nextQuestion();
 
-function isCorrect(ans) {
-  return true;
-}
-
 function celebrate(choice) {
   console.log(`${choice} is correct!`);
 }
