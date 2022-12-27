@@ -8,19 +8,6 @@ let state = localStorage.getItem('state') || 'pre-game';
 
 let pageContentElemList = document.querySelectorAll('div.page-content')
 
-refreshUI(state)
-function refreshUI(state) {
-  for (let page of pageContentElemList) {
-    if (page.classList.contains(state)) {
-      page.classList.remove('hidden');
-    } else {
-      page.classList.add('hidden');
-    }
-
-  }
-}
-
-
 class Health {
   constructor() {
     this.elem = document.querySelector(".health-bar");
@@ -34,7 +21,7 @@ class Health {
       this.display();
     }
 
-    if (this.lives === 0) game.stop(); 
+    if (this.lives === 0) game.stop();
   }
 
   display() {
@@ -54,6 +41,7 @@ class Game {
     this.state = 'pre-game'
     this.score = 0;
     this.health = new Health();
+    this.refreshUI();
   }
 
   play() {
@@ -67,7 +55,17 @@ class Game {
 
   changeState(state) {
     this.state = state;
-    refreshUI(this.state);
+    this.refreshUI();
+  }
+
+  refreshUI() {
+    for (let page of pageContentElemList) {
+      if (page.classList.contains(this.state)) {
+        page.classList.remove('hidden');
+      } else {
+        page.classList.add('hidden');
+      }
+    }
   }
 }
 
@@ -81,19 +79,20 @@ let answer = {
 const guessWordElem = document.querySelector(".guess-word");
 const answersElem = document.querySelector(".answers");
 let game = new Game();
-document.querySelector('.play-now').addEventListener('click', function(e) {
+
+document.querySelector('.play-now').addEventListener('click', function (e) {
   e.preventDefault();
   game.play()
 })
 
-document.querySelector('.play-again').addEventListener('click', function(e) {
+document.querySelector('.play-again').addEventListener('click', function (e) {
   e.preventDefault();
   game = new Game();
   game.play()
 })
 
 
-answersElem.addEventListener("click", function(e) {
+answersElem.addEventListener("click", function (e) {
   let answerVal = e.target.textContent;
   if (answer.isCorrect(answerVal)) {
     celebrate(answerVal);
