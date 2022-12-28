@@ -3,7 +3,6 @@
 import { getRandomWord } from "./wordlist";
 import { getSynonyms } from "./thesaurus";
 
-let retries = 5;
 let state = localStorage.getItem('state') || 'pre-game';
 
 let pageContentElemList = document.querySelectorAll('div.page-content')
@@ -13,6 +12,8 @@ class Game {
     this.state = 'pre-game'
     this.score = 0;
     this.lives = 3;
+    this.retries = 5;
+    this.updateQuestionUI();
     this.refreshUI();
   }
 
@@ -67,10 +68,26 @@ class Game {
     }
     elem.innerHTML = livesHTML;
   }
-  
+
   updateScoreUI() {
     const scoreElem = document.querySelector(".score-number");
     scoreElem.textContent = this.score;
+  }
+
+  updateQuestionUI() {
+    getSynonyms(getRandomWord())
+      .then(guessWord => {
+        this.retries = 5;
+        answer.value = guessWord.synonymsPrimary[0];
+
+        let answersHTML = getAnswersHTML(guessWord);
+        guessWordElem.textContent = guessWord.word;
+        answersElem.innerHTML = answersHTML;
+      })
+      .catch(err => {
+        console.error(`error ${err}`);
+        if (this.retries-- > 0) this.updateQuestionUI();
+      });
   }
 }
 
@@ -101,15 +118,14 @@ answersElem.addEventListener("click", function (e) {
   let answerVal = e.target.textContent;
   if (answer.isCorrect(answerVal)) {
     celebrate(answerVal);
-    game.addScore();
-    nextQuestion();
+    game.addScore(10);
+    game.updateQuestionUI();
   } else {
     pointOutAnswer();
     removeLife();
   }
 });
 
-nextQuestion();
 
 function celebrate(choice) {
   console.log(`${choice} is correct!`);
@@ -122,22 +138,6 @@ function pointOutAnswer() {
 function removeLife() {
   console.log("removing health");
   game.removeLife();
-}
-
-function nextQuestion() {
-  getSynonyms(getRandomWord())
-    .then(guessWord => {
-      retries = 5;
-      answer.value = guessWord.synonymsPrimary[0];
-
-      let answersHTML = getAnswersHTML(guessWord);
-      guessWordElem.textContent = guessWord.word;
-      answersElem.innerHTML = answersHTML;
-    })
-    .catch(err => {
-      console.error(`error ${err}`);
-      if (retries-- > 0) nextQuestion();
-    });
 }
 
 function getAnswersHTML(guessWord) {
