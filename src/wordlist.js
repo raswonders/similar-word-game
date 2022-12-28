@@ -5,6 +5,15 @@ export function getRandomWord() {
   return word;
 }
 
+export function getRandomWords(count) {
+  if (count < 0) return [];
+
+  let words = [];
+  for (let i = 0; i < count; i++) {
+    words.push(getRandomWord);
+  }
+}
+
 let list = [
   "aaron",
   "abandoned",
