@@ -1,29 +1,30 @@
-export function parsePage(page) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(page, "text/html");
+"use strict";
 
-    if (hasNoEntry(doc)) return null;
+class NoThesaurusEntry extends Error { };
+class NoSynonymsFound extends Error { };
+const parser = new DOMParser();
 
-    let word = doc.querySelector(".headerWord").textContent;
-    let synonymsAll = [];
-    let synonymsPrimary = [];
-    let isPrimary = true;
-    let divs = doc.querySelectorAll("div");
-    for (let div of divs) {
-        if (div.textContent === "Synonyms:") {
-            let sibling = div.nextElementSibling;
-            let synonyms = Array.from(sibling.querySelectorAll("span")).map(
-                item => item.textContent
-            );
-            if (isPrimary) {
-                synonymsPrimary = synonyms;
-                isPrimary = false;
-            }
-            synonymsAll = synonymsAll.concat(synonyms);
-        }
+function parsePage(html) {
+  const doc = parser.parseFromString(page, "text/html");
+  if (hasNoEntry(doc)) throw new NoThesaurusEntry('No thesaurus page for given word');
+  else return doc;
+}
+
+export function parseSynonyms(html) {
+  let doc = parsePage(html);
+  let synonyms = [];
+  let divs = doc.querySelectorAll("div");
+  for (let div of divs) {
+    if (div.textContent === "Synonyms:") {
+      let divSynonyms = div.nextElementSibling;
+      synonyms.concat(Array.from(divSynonyms.querySelectorAll("span")).map(
+        span => span.textContent
+      ));
     }
-    if (synonymsAll.length === 0) return null;
-    return { word, synonymsPrimary, synonymsAll };
+  }
+
+  if (synonyms.length === 0) throw new NoSynonymsFound('No synonyms found for given word');
+  return synonyms;
 }
 
 function hasNoEntry(document) {
