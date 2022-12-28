@@ -1,18 +1,24 @@
-import { parsePage } from "./parser"; 
+const thesaurusUrl = "https://www.wordreference.com/synonyms/" + word;
+let retriesLeft = 5;
 
-export function getSynonyms(word) {
-    const url = "https://www.wordreference.com/synonyms/" + word;
-
-    return new Promise((resolve, reject) => {
-        fetch(url)
-            .then(res => res.text())
-            .then(function (res) {
-                let wordObj = parsePage(res);
-                if (wordObj) resolve(wordObj);
-                else reject("word has no synonyms");
-            })
-            .catch(err => {
-                console.log(`error ${err}`);
-            });
-    });
+export function fetchSynonymsPage(word) {
+  return fetch(thesaurusUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      } else {
+        retriesLeft = 5;
+        return response.text();
+      }
+    })
+    .catch(error => {
+      console.err(error);
+      console.debug(`${retriesLeft} retries left`)
+      if (retriesLeft-- > 0) {
+        console.debug(`trying again...`)
+        return fetchSynonymsPage(page);
+      } else {
+        throw new Error('Unable to get word data from the Thesaurus server');
+      }
+    })
 }
