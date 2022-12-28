@@ -1,7 +1,19 @@
 "use strict";
 
-class NoThesaurusEntry extends Error { };
-class NoSynonymsFound extends Error { };
+export class NoThesaurusEntry extends Error {
+  constructor(msg) {
+    super(msg);
+    this.name = "NoThesaurusEntry";
+  }
+};
+
+export class NoSynonymsFound extends Error {
+  constructor(msg) {
+    super(msg);
+    this.name = "NoSynonymsFound";
+  }
+};
+
 const parser = new DOMParser();
 
 function parsePage(html) {
