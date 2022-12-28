@@ -1,7 +1,8 @@
-const thesaurusUrl = "https://www.wordreference.com/synonyms/" + word;
 let retriesLeft = 5;
 
 export function fetchSynonymsPage(word) {
+  const thesaurusUrl = "https://www.wordreference.com/synonyms/" + word;
+
   return fetch(thesaurusUrl)
     .then(response => {
       if (!response.ok) {
