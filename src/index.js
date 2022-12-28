@@ -39,7 +39,14 @@ class Game {
     if (this.lives === 0) this.stop();
   }
 
+  addScore(value) {
+    this.score += value;
+    this.updateScoreUI();
+  }
+
   refreshUI() {
+    this.updateLivesUI();
+    this.updateScoreUI();
     for (let page of pageContentElemList) {
       if (page.classList.contains(this.state)) {
         page.classList.remove('hidden');
@@ -47,7 +54,6 @@ class Game {
         page.classList.add('hidden');
       }
     }
-    this.updateLivesUI();
   }
 
   updateLivesUI() {
@@ -60,6 +66,11 @@ class Game {
       livesHTML += `<li><i class="health-bar-item fa-solid fa-heart-crack"></i></li>\n`;
     }
     elem.innerHTML = livesHTML;
+  }
+  
+  updateScoreUI() {
+    const scoreElem = document.querySelector(".score-number");
+    scoreElem.textContent = this.score;
   }
 }
 
@@ -90,7 +101,7 @@ answersElem.addEventListener("click", function (e) {
   let answerVal = e.target.textContent;
   if (answer.isCorrect(answerVal)) {
     celebrate(answerVal);
-    improveScore();
+    game.addScore();
     nextQuestion();
   } else {
     pointOutAnswer();
@@ -102,12 +113,6 @@ nextQuestion();
 
 function celebrate(choice) {
   console.log(`${choice} is correct!`);
-}
-
-function improveScore() {
-  const scoreElem = document.querySelector(".score-number");
-  let newScore = Number(scoreElem.textContent) + 10;
-  scoreElem.textContent = newScore;
 }
 
 function pointOutAnswer() {
