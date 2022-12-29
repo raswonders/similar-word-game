@@ -1,7 +1,6 @@
 "use strict";
 
-import { getRandomWord } from "./wordlist";
-import { getSynonyms } from "./thesaurus";
+import { getTask } from "./task";
 
 let state = localStorage.getItem('state') || 'pre-game';
 
@@ -12,7 +11,6 @@ class Game {
     this.state = 'pre-game'
     this.score = 0;
     this.lives = 3;
-    this.retries = 5;
     this.updateQuestionUI();
     this.refreshUI();
   }
@@ -75,28 +73,14 @@ class Game {
   }
 
   updateQuestionUI() {
-    getSynonyms(getRandomWord())
-      .then(guessWord => {
-        this.retries = 5;
-        answer.value = guessWord.synonymsPrimary[0];
-
-        let answersHTML = getAnswersHTML(guessWord);
-        guessWordElem.textContent = guessWord.word;
-        answersElem.innerHTML = answersHTML;
+    getTask()
+      .then(task => {
+        answersElem.innerHTML = getAnswersHTML(task);
+        guessWordElem.textContent = task.question;
+        this.task = task;
       })
-      .catch(err => {
-        console.error(`error ${err}`);
-        if (this.retries-- > 0) this.updateQuestionUI();
-      });
   }
 }
-
-let answer = {
-  value: "",
-  isCorrect(ans) {
-    return this.value === ans;
-  }
-};
 
 const guessWordElem = document.querySelector(".guess-word");
 const answersElem = document.querySelector(".answers");
@@ -116,7 +100,7 @@ document.querySelector('.play-again').addEventListener('click', function (e) {
 
 answersElem.addEventListener("click", function (e) {
   let answerVal = e.target.textContent;
-  if (answer.isCorrect(answerVal)) {
+  if (game.task.isCorrect(answerVal)) {
     celebrate(answerVal);
     game.addScore(10);
     game.updateQuestionUI();
@@ -140,19 +124,12 @@ function removeLife() {
   game.removeLife();
 }
 
-function getAnswersHTML(guessWord) {
-  let options = [guessWord.synonymsPrimary[0]];
-  while (options.length < 4) {
-    let word = getRandomWord();
-    if (!guessWord.synonymsAll.includes(word)) options.push(word);
-  }
-  options.sort(() => 0.5 - Math.random);
-
+function getAnswersHTML(task) {
   let resultHTML = "";
+  let optionsCopy = task.options.slice();
   while (options.length) {
     let word = options.pop();
     resultHTML += `<li class="answer-item"><a class="answer-link" href="#">${word}</a></li>\n`;
   }
-
   return resultHTML;
 }
