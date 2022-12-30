@@ -127,8 +127,8 @@ function removeLife() {
 function getAnswersHTML(task) {
   let resultHTML = "";
   let optionsCopy = task.options.slice();
-  while (options.length) {
-    let word = options.pop();
+  while (optionsCopy.length) {
+    let word = optionsCopy.pop();
     resultHTML += `<li class="answer-item"><a class="answer-link" href="#">${word}</a></li>\n`;
   }
   return resultHTML;
