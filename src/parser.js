@@ -17,7 +17,7 @@ export class NoSynonymsFound extends Error {
 const parser = new DOMParser();
 
 function parsePage(html) {
-  const doc = parser.parseFromString(page, "text/html");
+  const doc = parser.parseFromString(html, "text/html");
   if (hasNoEntry(doc)) throw new NoThesaurusEntry('No thesaurus page for given word');
   else return doc;
 }
