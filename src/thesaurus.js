@@ -13,7 +13,7 @@ export function fetchSynonymsPage(word) {
       }
     })
     .catch(error => {
-      console.err(error);
+      console.error(error);
       console.debug(`${retriesLeft} retries left`)
       if (retriesLeft-- > 0) {
         console.debug(`trying again...`)
