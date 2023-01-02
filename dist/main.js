@@ -102,6 +102,7 @@ function getTask() {
     })
     .catch(err => {
       if (err instanceof _parser__WEBPACK_IMPORTED_MODULE_2__.NoSynonymsFound || err instanceof _parser__WEBPACK_IMPORTED_MODULE_2__.NoThesaurusEntry) return getTask();
+      else throw err;
     })
 }
 
@@ -132,11 +133,11 @@ function fetchSynonymsPage(word) {
       }
     })
     .catch(error => {
-      console.err(error);
+      console.error(error);
       console.debug(`${retriesLeft} retries left`)
       if (retriesLeft-- > 0) {
         console.debug(`trying again...`)
-        return fetchSynonymsPage(page);
+        return fetchSynonymsPage(word);
       } else {
         throw new Error('Unable to get word data from the Thesaurus server');
       }
@@ -10242,26 +10243,27 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let state = localStorage.getItem('state') || 'pre-game';
+let state = localStorage.getItem("state") || "pre-game";
 
-let pageContentElemList = document.querySelectorAll('div.page-content')
+let pageContentElemList = document.querySelectorAll("div.page-content");
 
 class Game {
   constructor() {
-    this.state = 'pre-game'
+    this.state = "pre-game";
     this.score = 0;
     this.lives = 3;
-    this.updateQuestionUI();
+    this.question = document.querySelector('.word-section');
+    this.loader = document.querySelector('.loader');
     this.refreshUI();
   }
 
   play() {
-    this.changeState('in-game')
+    this.changeState("in-game");
   }
 
   stop() {
-    document.querySelector('.score-total').textContent = game.score;
-    this.changeState('post-game');
+    document.querySelector(".score-total").textContent = game.score;
+    this.changeState("post-game");
   }
 
   changeState(state) {
@@ -10286,11 +10288,12 @@ class Game {
   refreshUI() {
     this.updateLivesUI();
     this.updateScoreUI();
+    this.updateQuestionUI();
     for (let page of pageContentElemList) {
       if (page.classList.contains(this.state)) {
-        page.classList.remove('hidden');
+        page.classList.remove("hidden");
       } else {
-        page.classList.add('hidden');
+        page.classList.add("hidden");
       }
     }
   }
@@ -10313,12 +10316,23 @@ class Game {
   }
 
   updateQuestionUI() {
-    (0,_task__WEBPACK_IMPORTED_MODULE_0__.getTask)()
-      .then(task => {
-        answersElem.innerHTML = getAnswersHTML(task);
-        guessWordElem.textContent = task.question;
-        this.task = task;
-      })
+    this.showLoader();
+    return (0,_task__WEBPACK_IMPORTED_MODULE_0__.getTask)().then(task => {
+      answersElem.innerHTML = getAnswersHTML(task);
+      guessWordElem.textContent = task.question;
+      this.showQuestion();
+      this.task = task;
+    });
+  }
+
+  showLoader() {
+    this.question.classList.add('hidden');
+    this.loader.classList.remove('hidden');
+  }
+
+  showQuestion() {
+    this.loader.classList.add('hidden');
+    this.question.classList.remove('hidden');
   }
 }
 
@@ -10326,19 +10340,18 @@ const guessWordElem = document.querySelector(".guess-word");
 const answersElem = document.querySelector(".answers");
 let game = new Game();
 
-document.querySelector('.play-now').addEventListener('click', function (e) {
+document.querySelector(".play-now").addEventListener("click", function(e) {
   e.preventDefault();
-  game.play()
-})
+  game.play();
+});
 
-document.querySelector('.play-again').addEventListener('click', function (e) {
+document.querySelector(".play-again").addEventListener("click", function(e) {
   e.preventDefault();
   game = new Game();
-  game.play()
-})
+  game.play();
+});
 
-
-answersElem.addEventListener("click", function (e) {
+answersElem.addEventListener("click", function(e) {
   let answerVal = e.target.textContent;
   if (game.task.isCorrect(answerVal)) {
     celebrate(answerVal);
@@ -10349,7 +10362,6 @@ answersElem.addEventListener("click", function (e) {
     removeLife();
   }
 });
-
 
 function celebrate(choice) {
   console.log(`${choice} is correct!`);
@@ -10373,6 +10385,7 @@ function getAnswersHTML(task) {
   }
   return resultHTML;
 }
+
 })();
 
 /******/ })()

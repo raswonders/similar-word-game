@@ -17,7 +17,7 @@ export function fetchSynonymsPage(word) {
       console.debug(`${retriesLeft} retries left`)
       if (retriesLeft-- > 0) {
         console.debug(`trying again...`)
-        return fetchSynonymsPage(page);
+        return fetchSynonymsPage(word);
       } else {
         throw new Error('Unable to get word data from the Thesaurus server');
       }
