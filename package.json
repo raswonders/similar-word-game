@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "proxy": "lcp --proxyUrl https://www.wordreference.com",
+    "build": "webpack & lcp --proxyUrl https://www.wordreference.com",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
