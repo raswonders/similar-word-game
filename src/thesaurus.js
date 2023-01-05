@@ -1,9 +1,14 @@
 let retriesLeft = 5;
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 export function fetchSynonymsPage(word) {
-  const thesaurusUrl = "https://www.wordreference.com/synonyms/" + word;
+  const REMOTE_PROXY = "https://www.wordreference.com/synonyms/" + word;
+  const LOCAL_PROXY = "http://localhost:8010/proxy/synonyms/" + word;
+  let url = LOCAL_PROXY;
 
-  return fetch(thesaurusUrl)
+  if (IS_PRODUCTION) url = REMOTE_PROXY;
+
+  return fetch(url)
     .then(response => {
       if (!response.ok) {
         throw new Error(`${response.status} ${response.statusText}`);
