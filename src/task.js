@@ -25,7 +25,9 @@ export function getTask() {
       return currentTask;
     })
     .catch(err => {
-      if (err instanceof NoSynonymsFound || err instanceof NoThesaurusEntry) return getTask();
-      else throw err;
+      if (err instanceof NoSynonymsFound || err instanceof NoThesaurusEntry) {
+        console.error(err.name, err.message)
+        return getTask();
+      } else throw err;
     })
 }
