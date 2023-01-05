@@ -4,6 +4,8 @@ import { getRandomWord, getRandomWords } from "./wordlist";
 import { fetchSynonymsPage } from './thesaurus';
 import { parseSynonyms, NoSynonymsFound, NoThesaurusEntry } from './parser';
 
+
+
 class Task {
   constructor(question, answer) {
     this.question = question; 
@@ -15,6 +17,7 @@ class Task {
 } 
 
 let currentTask;
+const RETRY_DELAY = 2000;
 
 export function getTask() {
   let word = getRandomWord();
@@ -27,7 +30,13 @@ export function getTask() {
     .catch(err => {
       if (err instanceof NoSynonymsFound || err instanceof NoThesaurusEntry) {
         console.error(err.name, err.message)
-        return getTask();
+        return getTaskWithDelay(RETRY_DELAY);
       } else throw err;
     })
+}
+
+function getTaskWithDelay(delay) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(getTask()), delay)
+  })
 }
