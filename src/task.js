@@ -14,6 +14,11 @@ class Task {
     this.options = this.options.concat(getRandomWords(3));
     this.options.sort(() => 0.5 - Math.random);
   }
+
+  isCorrect(chosen) {
+    if (chosen === this.answer) return true;
+    return false;
+  }
 } 
 
 let currentTask;
