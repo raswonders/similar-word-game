@@ -12,7 +12,7 @@ class Task {
     this.answer = answer;
     this.options = [answer];
     this.options = this.options.concat(getRandomWords(3));
-    this.options.sort(() => 0.5 - Math.random);
+    this.options.sort(() => 0.5 - Math.random());
   }
 
   isCorrect(chosen) {
