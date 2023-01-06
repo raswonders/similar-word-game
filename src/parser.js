@@ -29,7 +29,7 @@ export function parseSynonyms(html) {
   for (let div of divs) {
     if (div.textContent === "Synonyms:") {
       let divSynonyms = div.nextElementSibling;
-      synonyms.concat(Array.from(divSynonyms.querySelectorAll("span")).map(
+      synonyms = synonyms.concat(Array.from(divSynonyms.querySelectorAll("span")).map(
         span => span.textContent
       ));
     }
