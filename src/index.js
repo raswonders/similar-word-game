@@ -12,7 +12,7 @@ class Game {
     this.score = 0;
     this.lives = 3;
     this.question = document.querySelector('.word-section');
-    this.loader = document.querySelector('.loader');
+    this.loader = document.querySelector('.loader-wrap');
     this.refreshUI();
   }
 
