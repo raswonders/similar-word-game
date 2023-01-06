@@ -10,8 +10,9 @@ export function getRandomWords(count) {
 
   let words = [];
   for (let i = 0; i < count; i++) {
-    words.push(getRandomWord);
+    words.push(getRandomWord());
   }
+  return words;
 }
 
 let list = [
