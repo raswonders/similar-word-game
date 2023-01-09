@@ -45,7 +45,7 @@ function parseSynonyms(html) {
   for (let div of divs) {
     if (div.textContent === "Synonyms:") {
       let divSynonyms = div.nextElementSibling;
-      synonyms.concat(Array.from(divSynonyms.querySelectorAll("span")).map(
+      synonyms = synonyms.concat(Array.from(divSynonyms.querySelectorAll("span")).map(
         span => span.textContent
       ));
     }
@@ -61,6 +61,58 @@ function hasNoEntry(document) {
 
 /***/ }),
 
+/***/ "./src/state.js":
+/*!**********************!*\
+  !*** ./src/state.js ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Game": () => (/* binding */ Game)
+/* harmony export */ });
+/* harmony import */ var _ui__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ui */ "./src/ui.js");
+
+
+
+
+class Game {
+  constructor() {
+    this.state = "pre-game";
+    this.score = 0;
+    this.lives = 3;
+    (0,_ui__WEBPACK_IMPORTED_MODULE_0__.updatePageContent)("pre-game");
+  }
+
+  play() {
+    this.changeState("in-game");
+  }
+
+  stop() {
+    this.changeState("post-game");
+  }
+
+  changeState(state) {
+    this.state = state;
+    if (state === "in-game") (0,_ui__WEBPACK_IMPORTED_MODULE_0__.updateInGameUI)(this.lives, this.score);
+    if (state === "post-game") (0,_ui__WEBPACK_IMPORTED_MODULE_0__.updatePostGameUI)(this.score);
+    (0,_ui__WEBPACK_IMPORTED_MODULE_0__.updatePageContent)(state);
+  }
+
+  removeLife() {
+    this.lives--;
+    (0,_ui__WEBPACK_IMPORTED_MODULE_0__.updateLivesUI)(this.lives);
+    if (this.lives <= 0) this.stop();
+  }
+
+  addScore(value) {
+    this.score += value;
+    (0,_ui__WEBPACK_IMPORTED_MODULE_0__.updateScoreUI)(this.score);
+  }
+}
+
+/***/ }),
+
 /***/ "./src/task.js":
 /*!*********************!*\
   !*** ./src/task.js ***!
@@ -69,6 +121,7 @@ function hasNoEntry(document) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "currentTask": () => (/* binding */ currentTask),
 /* harmony export */   "getTask": () => (/* binding */ getTask)
 /* harmony export */ });
 /* harmony import */ var _wordlist__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./wordlist */ "./src/wordlist.js");
@@ -86,11 +139,17 @@ class Task {
     this.answer = answer;
     this.options = [answer];
     this.options = this.options.concat((0,_wordlist__WEBPACK_IMPORTED_MODULE_0__.getRandomWords)(3));
-    this.options.sort(() => 0.5 - Math.random);
+    this.options.sort(() => 0.5 - Math.random());
+  }
+
+  isCorrect(chosen) {
+    if (chosen === this.answer) return true;
+    return false;
   }
 } 
 
 let currentTask;
+const RETRY_DELAY = 2000;
 
 function getTask() {
   let word = (0,_wordlist__WEBPACK_IMPORTED_MODULE_0__.getRandomWord)();
@@ -101,9 +160,17 @@ function getTask() {
       return currentTask;
     })
     .catch(err => {
-      if (err instanceof _parser__WEBPACK_IMPORTED_MODULE_2__.NoSynonymsFound || err instanceof _parser__WEBPACK_IMPORTED_MODULE_2__.NoThesaurusEntry) return getTask();
-      else throw err;
+      if (err instanceof _parser__WEBPACK_IMPORTED_MODULE_2__.NoSynonymsFound || err instanceof _parser__WEBPACK_IMPORTED_MODULE_2__.NoThesaurusEntry) {
+        console.error(err.name, err.message)
+        return getTaskWithDelay(RETRY_DELAY);
+      } else throw err;
     })
+}
+
+function getTaskWithDelay(delay) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(getTask()), delay)
+  })
 }
 
 /***/ }),
@@ -119,11 +186,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "fetchSynonymsPage": () => (/* binding */ fetchSynonymsPage)
 /* harmony export */ });
 let retriesLeft = 5;
+const IS_PRODUCTION = "development" === "production";
 
 function fetchSynonymsPage(word) {
-  const thesaurusUrl = "https://www.wordreference.com/synonyms/" + word;
+  const REMOTE_PROXY = "https://www.wordreference.com/synonyms/" + word;
+  const LOCAL_PROXY = "http://localhost:8010/proxy/synonyms/" + word;
+  let url = LOCAL_PROXY;
 
-  return fetch(thesaurusUrl)
+  if (IS_PRODUCTION) url = REMOTE_PROXY;
+
+  return fetch(url)
     .then(response => {
       if (!response.ok) {
         throw new Error(`${response.status} ${response.statusText}`);
@@ -142,6 +214,108 @@ function fetchSynonymsPage(word) {
         throw new Error('Unable to get word data from the Thesaurus server');
       }
     })
+}
+
+/***/ }),
+
+/***/ "./src/ui.js":
+/*!*******************!*\
+  !*** ./src/ui.js ***!
+  \*******************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "answersElement": () => (/* binding */ answersElement),
+/* harmony export */   "updateInGameUI": () => (/* binding */ updateInGameUI),
+/* harmony export */   "updateLivesUI": () => (/* binding */ updateLivesUI),
+/* harmony export */   "updatePageContent": () => (/* binding */ updatePageContent),
+/* harmony export */   "updatePostGameUI": () => (/* binding */ updatePostGameUI),
+/* harmony export */   "updateQuestionUI": () => (/* binding */ updateQuestionUI),
+/* harmony export */   "updateScoreUI": () => (/* binding */ updateScoreUI)
+/* harmony export */ });
+/* harmony import */ var _task__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./task */ "./src/task.js");
+
+
+const pageContentElements = document.querySelectorAll("div.page-content");
+if (pageContentElements.length === 0)
+  throw new Error("No content page elements found");
+const healthElement = document.querySelector(".health-bar");
+if (!healthElement) throw new Error("Health-bar element not found");
+const scoreElement = document.querySelector(".score-number");
+if (!scoreElement) throw new Error("Score element not found");
+const answersElement = document.querySelector(".answers");
+if (!answersElement) throw new Error("Answers element not found");
+const guessWordElement = document.querySelector(".guess-word");
+if (!guessWordElement) throw new Error("Answers element not found");
+const questionElement = document.querySelector('.word-section');
+if (!questionElement) throw new Error("Question element not found");
+const loaderElement = document.querySelector('.loader-wrap');
+if (!loaderElement) throw new Error("Loader element not found");
+
+
+function updatePageContent(state) {
+  for (let page of pageContentElements) {
+    if (page.classList.contains(state)) {
+      page.classList.remove("hidden");
+    } else {
+      page.classList.add("hidden");
+    }
+  }
+}
+
+function updatePostGameUI(score) {
+  document.querySelector(".score-total").textContent = score;
+}
+
+function updateInGameUI(lives, score) {
+  updateLivesUI(lives);
+  updateScoreUI(score);
+  updateQuestionUI();
+}
+
+function updateLivesUI(lives) {
+  let HtmlString = "";
+  for (let i = 0; i < lives; i++) {
+    HtmlString += `<li><i class="health-bar-item fa-solid fa-heart"></i></li>\n`;
+  }
+  for (let i = 0; i < 3 - lives; i++) {
+    HtmlString += `<li><i class="health-bar-item fa-solid fa-heart-crack"></i></li>\n`;
+  }
+  healthElement.innerHTML = HtmlString;
+}
+
+function updateScoreUI(score) {
+  scoreElement.textContent = score;
+}
+
+function updateQuestionUI() {
+  showLoader();
+  return (0,_task__WEBPACK_IMPORTED_MODULE_0__.getTask)().then(task => {
+    answersElement.innerHTML = getAnswersHTML(task);
+    guessWordElement.textContent = task.question;
+    showQuestion();
+  });
+}
+
+function showLoader() {
+  questionElement.classList.add('hidden');
+  loaderElement.classList.remove('hidden');
+}
+
+function showQuestion() {
+  loaderElement.classList.add('hidden');
+  questionElement.classList.remove('hidden');
+}
+
+function getAnswersHTML(task) {
+  let resultHTML = "";
+  let optionsCopy = task.options.slice();
+  while (optionsCopy.length) {
+    let word = optionsCopy.pop();
+    resultHTML += `<li class="answer-item"><a class="answer-link" href="#">${word}</a></li>\n`;
+  }
+  return resultHTML;
 }
 
 /***/ }),
@@ -169,8 +343,9 @@ function getRandomWords(count) {
 
   let words = [];
   for (let i = 0; i < count; i++) {
-    words.push(getRandomWord);
+    words.push(getRandomWord());
   }
+  return words;
 }
 
 let list = [
@@ -10238,107 +10413,17 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _task__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./task */ "./src/task.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./src/state.js");
+/* harmony import */ var _ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ui */ "./src/ui.js");
+/* harmony import */ var _task__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./task */ "./src/task.js");
 
 
 
 
-let state = localStorage.getItem("state") || "pre-game";
 
-let pageContentElemList = document.querySelectorAll("div.page-content");
 
-class Game {
-  constructor() {
-    this.state = "pre-game";
-    this.score = 0;
-    this.lives = 3;
-    this.question = document.querySelector('.word-section');
-    this.loader = document.querySelector('.loader');
-    this.refreshUI();
-  }
 
-  play() {
-    this.changeState("in-game");
-  }
-
-  stop() {
-    document.querySelector(".score-total").textContent = game.score;
-    this.changeState("post-game");
-  }
-
-  changeState(state) {
-    this.state = state;
-    this.refreshUI();
-  }
-
-  removeLife() {
-    if (this.lives >= 1) {
-      this.lives--;
-      this.updateLivesUI();
-    }
-
-    if (this.lives === 0) this.stop();
-  }
-
-  addScore(value) {
-    this.score += value;
-    this.updateScoreUI();
-  }
-
-  refreshUI() {
-    this.updateLivesUI();
-    this.updateScoreUI();
-    this.updateQuestionUI();
-    for (let page of pageContentElemList) {
-      if (page.classList.contains(this.state)) {
-        page.classList.remove("hidden");
-      } else {
-        page.classList.add("hidden");
-      }
-    }
-  }
-
-  updateLivesUI() {
-    let elem = document.querySelector(".health-bar");
-    let livesHTML = "";
-    for (let i = 0; i < this.lives; i++) {
-      livesHTML += `<li><i class="health-bar-item fa-solid fa-heart"></i></li>\n`;
-    }
-    for (let i = 0; i < 3 - this.lives; i++) {
-      livesHTML += `<li><i class="health-bar-item fa-solid fa-heart-crack"></i></li>\n`;
-    }
-    elem.innerHTML = livesHTML;
-  }
-
-  updateScoreUI() {
-    const scoreElem = document.querySelector(".score-number");
-    scoreElem.textContent = this.score;
-  }
-
-  updateQuestionUI() {
-    this.showLoader();
-    return (0,_task__WEBPACK_IMPORTED_MODULE_0__.getTask)().then(task => {
-      answersElem.innerHTML = getAnswersHTML(task);
-      guessWordElem.textContent = task.question;
-      this.showQuestion();
-      this.task = task;
-    });
-  }
-
-  showLoader() {
-    this.question.classList.add('hidden');
-    this.loader.classList.remove('hidden');
-  }
-
-  showQuestion() {
-    this.loader.classList.add('hidden');
-    this.question.classList.remove('hidden');
-  }
-}
-
-const guessWordElem = document.querySelector(".guess-word");
-const answersElem = document.querySelector(".answers");
-let game = new Game();
+let game = new _state__WEBPACK_IMPORTED_MODULE_0__.Game();
 
 document.querySelector(".play-now").addEventListener("click", function(e) {
   e.preventDefault();
@@ -10347,16 +10432,16 @@ document.querySelector(".play-now").addEventListener("click", function(e) {
 
 document.querySelector(".play-again").addEventListener("click", function(e) {
   e.preventDefault();
-  game = new Game();
+  game = new _state__WEBPACK_IMPORTED_MODULE_0__.Game();
   game.play();
 });
 
-answersElem.addEventListener("click", function(e) {
+_ui__WEBPACK_IMPORTED_MODULE_1__.answersElement.addEventListener("click", function(e) {
   let answerVal = e.target.textContent;
-  if (game.task.isCorrect(answerVal)) {
+  if (_task__WEBPACK_IMPORTED_MODULE_2__.currentTask.isCorrect(answerVal)) {
     celebrate(answerVal);
     game.addScore(10);
-    game.updateQuestionUI();
+    (0,_ui__WEBPACK_IMPORTED_MODULE_1__.updateQuestionUI)();
   } else {
     pointOutAnswer();
     removeLife();
@@ -10372,20 +10457,9 @@ function pointOutAnswer() {
 }
 
 function removeLife() {
-  console.log("removing health");
+  console.debug("removing health");
   game.removeLife();
 }
-
-function getAnswersHTML(task) {
-  let resultHTML = "";
-  let optionsCopy = task.options.slice();
-  while (optionsCopy.length) {
-    let word = optionsCopy.pop();
-    resultHTML += `<li class="answer-item"><a class="answer-link" href="#">${word}</a></li>\n`;
-  }
-  return resultHTML;
-}
-
 })();
 
 /******/ })()

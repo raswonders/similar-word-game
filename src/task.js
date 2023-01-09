@@ -4,8 +4,6 @@ import { getRandomWord, getRandomWords } from "./wordlist";
 import { fetchSynonymsPage } from './thesaurus';
 import { parseSynonyms, NoSynonymsFound, NoThesaurusEntry } from './parser';
 
-
-
 class Task {
   constructor(question, answer) {
     this.question = question; 
@@ -21,7 +19,7 @@ class Task {
   }
 } 
 
-let currentTask;
+export let currentTask;
 const RETRY_DELAY = 2000;
 
 export function getTask() {
